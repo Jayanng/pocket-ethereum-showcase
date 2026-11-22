@@ -2,6 +2,8 @@
 
 A showcase of the Pocket Ethereum Mainnet JSON-RPC service in action: real calls, real results, no key, no purchase.
 
+**Live demo:** https://pocket-ethereum-showcase.vercel.app/
+
 ## Watch it
 
 [![Watch the showcase](screenshots/02-after-run.png)](pocket-service-showcase.mp4)
