@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ethereum Mainnet JSON-RPC, via Pocket Network</title>
+<style>
+  :root { --paper:#F6F4EF; --blue:#0018FF; --ink:#141414; --muted:#5b5b5b; --card:#ffffff; --green:#15803d; --red:#dc2626; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .hero { background:var(--paper); background-image:radial-gradient(#d8d2c4 1px, transparent 1px); background-size:22px 22px; padding:56px 20px 28px; text-align:center; border-bottom:1px solid #e3ded2; }
+  .brand { display:inline-flex; gap:6px; margin-bottom:18px; }
+  .brand span { width:34px; height:34px; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:19px; }
+  h1 { font-size:44px; line-height:1.05; margin:0 0 12px; letter-spacing:-0.02em; }
+  h1 em { font-style:normal; color:var(--blue); }
+  .sub { max-width:640px; margin:0 auto; color:var(--muted); font-size:17px; line-height:1.55; }
+  .sub code { background:#fff; border:1px solid #e3ded2; padding:1px 6px; border-radius:4px; color:var(--ink); font-size:15px; }
+  .wrap { max-width:920px; margin:0 auto; padding:28px 20px 48px; }
+  .runrow { display:flex; gap:12px; align-items:center; justify-content:center; margin:0 0 26px; flex-wrap:wrap; }
+  button#run { background:var(--blue); color:#fff; border:0; font-size:17px; font-weight:700; padding:13px 26px; border-radius:6px; cursor:pointer; }
+  button#run:disabled { opacity:.55; cursor:default; }
+  .status { font-size:15px; color:var(--muted); }
+  .status b { color:var(--green); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:700px){ .grid{grid-template-columns:1fr;} h1{font-size:32px;} }
+  .card { position:relative; background:var(--card); border:1px solid #e3ded2; border-radius:8px; padding:18px 18px 16px; }
+  .card .corner { position:absolute; width:10px; height:10px; border:2px solid var(--blue); }
+  .card .corner.tl{ top:-2px; left:-2px; border-right:0; border-bottom:0; }
+  .card .corner.tr{ top:-2px; right:-2px; border-left:0; border-bottom:0; }
+  .card .corner.bl{ bottom:-2px; left:-2px; border-right:0; border-top:0; }
+  .card .corner.br{ bottom:-2px; right:-2px; border-left:0; border-top:0; }
+  .card h2 { margin:0 0 4px; font-size:18px; display:flex; gap:10px; align-items:center; }
+  .letter { width:26px; height:26px; background:var(--blue); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; flex:none; }
+  .method { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:14px; color:var(--muted); margin:0 0 10px; }
+  .result { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:15px; background:var(--paper); border:1px solid #e3ded2; border-radius:6px; padding:10px 12px; min-height:44px; word-break:break-all; }
+  .result .ok { color:var(--green); font-weight:700; }
+  .decoded { font-size:14px; color:var(--muted); margin:8px 0 0; line-height:1.5; }
+  .decoded b { color:var(--ink); }
+  .note { margin-top:22px; font-size:14px; color:var(--muted); line-height:1.6; text-align:center; }
+  .note code { background:#fff; border:1px solid #e3ded2; padding:1px 6px; border-radius:4px; color:var(--ink); }
+  footer { text-align:center; color:#fff; background:var(--blue); padding:16px; font-size:14px; }
+  footer a { color:#fff; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="brand"><span>P</span><span>O</span><span>C</span><span>K</span><span>E</span><span>T</span></div>
+  <h1>Ethereum Mainnet JSON-RPC, <em>in action</em></h1>
+  <p class="sub">A real listed Pocket Network service, called live. No wallet, no API key, no payment. Every call below goes to the public endpoint <code>https://eth.api.pocket.network</code> and the answers on screen are the live answers.</p>
+</div>
+<div class="wrap">
+  <div class="runrow">
+    <button id="run">Run the live calls</button>
+    <span class="status" id="status">Not run yet. Press the button to call the service live.</span>
+  </div>
+  <div class="grid" id="cards"></div>
+  <p class="note">Service: Ethereum Mainnet JSON-RPC, listed at agent.pocket.network/services/eth. Protocol: JSON-RPC over HTTPS. Endpoint: <code>https://eth.api.pocket.network</code>, the free Pocket Foundation public endpoint for this service. The portal route for the same service is $0.005 per call; this showcase uses the free public endpoint, so no purchase is needed. The calls are read-only. The balance shown is for the public address vitalik.eth, <code>0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045</code>.</p>
+</div>
+<footer>Showcase for the Pocket quest &ldquo;Showcase a Pocket Service in Action&rdquo;. All calls are real and live.</footer>
+<script>
+const CALLS = [
+  { letter:'C', name:'Chain ID', method:'eth_chainId', params:[], explain:'The chain answers 1, Ethereum mainnet. One number proves you reached the right chain.' },
+  { letter:'B', name:'Latest block', method:'eth_blockNumber', params:[], explain:'The latest block height, live. Run it twice and the number moves forward.' },
+  { letter:'G', name:'Gas price', method:'eth_gasPrice', params:[], explain:'What the network charges right now, in wei. Divide by a billion for gwei.' },
+  { letter:'A', name:'Account balance', method:'eth_getBalance', params:['0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045','latest'], explain:'The balance of the public address vitalik.eth, in wei. Divide by 10 to the 18 for ETH.' },
+  { letter:'T', name:'Transactions in the latest block', method:'eth_getBlockTransactionCountByNumber', params:['latest'], explain:'How many transactions the newest block holds.' },
+];
+const cardsEl = document.getElementById('cards');
+CALLS.forEach(function(c, i){
+  const d = document.createElement('div');
+  d.className = 'card';
+  d.innerHTML = '<span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>'
+    + '<h2><span class="letter">'+c.letter+'</span>'+c.name+'</h2>'
+    + '<p class="method">'+c.method+'('+c.params.map(function(p){return JSON.stringify(p);}).join(', ')+')</p>'
+    + '<div class="result" id="r'+i+'">Waiting for the run.</div>'
+    + '<p class="decoded">'+c.explain+'</p>';
+  cardsEl.appendChild(d);
+});
+function decode(method, hex){
+  try { const v = BigInt(hex); 
+    if (method === 'eth_chainId') return 'Decoded: <b>'+v.toString()+'</b> (Ethereum mainnet)';
+    if (method === 'eth_blockNumber') return 'Decoded: <b>'+Number(v).toLocaleString('en-US')+'</b>';
+    if (method === 'eth_gasPrice') return 'Decoded: <b>'+v.toString()+'</b> wei = <b>'+(Number(v)/1e9).toFixed(4)+'</b> gwei';
+    if (method === 'eth_getBalance') return 'Decoded: <b>'+(Number(v)/1e18).toFixed(4)+'</b> ETH';
+    if (method === 'eth_getBlockTransactionCountByNumber') return 'Decoded: <b>'+v.toString()+'</b> transactions';
+  } catch(e){ return ''; }
+  return '';
+}
+document.getElementById('run').addEventListener('click', async function(){
+  const btn = this; btn.disabled = true;
+  const st = document.getElementById('status'); st.textContent = 'Calling the service live…';
+  let ok = 0;
+  for (let i=0;i<CALLS.length;i++){
+    const c = CALLS[i];
+    const el = document.getElementById('r'+i);
+    el.textContent = 'Calling…';
+    try {
+      const t0 = performance.now();
+      const res = await fetch('https://eth.api.pocket.network', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({jsonrpc:'2.0', id:i+1, method:c.method, params:c.params}) });
+      const ms = Math.round(performance.now()-t0);
+      const data = await res.json();
+      if (data.result !== undefined) {
+        ok++;
+        el.innerHTML = '<span class="ok">OK</span> ' + data.result + ' <span style="color:#5b5b5b">(' + ms + ' ms)</span><br>' + decode(c.method, data.result);
+      } else {
+        el.textContent = 'Error: ' + JSON.stringify(data.error || data);
+      }
+    } catch(e){ el.textContent = 'Request failed: ' + e.message; }
+  }
+  st.innerHTML = '<b>' + ok + ' of ' + CALLS.length + ' calls answered live.</b>';
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>
